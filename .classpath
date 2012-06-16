@@ -9,6 +9,5 @@
 	<classpathentry kind="var" path="M2_REPO/org/apache/solr/solr-solrj/3.6.0/solr-solrj-3.6.0.jar"/>
 	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-core/1.0.2/hadoop-core-1.0.2.jar"/>
 	<classpathentry kind="var" path="M2_REPO/junit/junit/4.8.2/junit-4.8.2.jar"/>
-	<classpathentry kind="var" path="M2_REPO/org/apache/hadoop/hadoop-test/1.0.2/hadoop-test-1.0.2.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
