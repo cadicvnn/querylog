@@ -27,7 +27,7 @@ public class SuggestMaper extends Mapper<LongWritable, Text, Text, IntWritable> 
       throws IOException, InterruptedException {
     Query query = extractor.extract(value.toString());
     if (query != null) {
-      if ((query instanceof Click)) {
+      if (!(query instanceof Click)) {
         context.getCounter("Query Type", "Query").increment(1L);
         context.write(new Text(query.getQuery()), ONE);
       } else {

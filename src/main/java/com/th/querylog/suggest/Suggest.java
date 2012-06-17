@@ -3,7 +3,6 @@ package com.th.querylog.suggest;
 import java.io.IOException;
 import java.util.Random;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.conf.Configured;
 import org.apache.hadoop.fs.FileStatus;
 import org.apache.hadoop.fs.FileSystem;
@@ -25,39 +24,32 @@ public class Suggest extends Configured implements Tool {
   }
 
   public int run(String[] args) throws Exception {
-    Configuration conf = getConf();
-
-    Path[] inputs = (Path[]) null;
-
-    for (int i = 0; i < args.length; i++) {
-      if ("-input".equals(args[i])) {
-        i++;
-        Path dir = new Path(args[i]);
-        FileSystem fs = dir.getFileSystem(getConf());
-        FileStatus[] fstats = fs.listStatus(dir, new PathFilter() {
-          private final String regex = "^.*/user-ct-test-collection-\\d+.txt$";
-
-          public boolean accept(Path path) {
-            return path.toString().matches(regex);
-          }
-        });
-        inputs = FileUtil.stat2Paths(fstats);
-      }
-    }
-
-    if (inputs.length == 0) {
+    if(args.length < 1) {
       usage();
     }
+    
+    Path[] inputs = null;
 
-    return suggest(inputs, conf);
+    Path dir = new Path(args[0]);
+    FileSystem fs = dir.getFileSystem(getConf());
+    FileStatus[] fstats = fs.listStatus(dir, new PathFilter() {
+      private final String regex = "^.*/user-ct-test-collection-\\d+.txt$";
+
+      public boolean accept(Path path) {
+        return path.toString().matches(regex);
+      }
+    });
+    inputs = FileUtil.stat2Paths(fstats);
+
+    return suggest(inputs);
   }
 
   private void usage() {
-    System.out.println("Suggest:");
-    System.out.println("    -input INPUT DIR \t use INPUT as input resource");
+    System.out.println("Suggest: input");
+    System.out.println("\tinput INPUT DIR \t use INPUT as input resource");
   }
 
-  private final int suggest(Path[] inputs, Configuration conf)
+  private final int suggest(Path[] inputs)
       throws IOException, InterruptedException, ClassNotFoundException {
     Job job = new Job(getConf(), "Suggest");
     job.setJarByClass(Suggest.class);
@@ -72,8 +64,7 @@ public class Suggest extends Configured implements Tool {
     for (Path input : inputs) {
       FileInputFormat.addInputPath(job, input);
     }
-    Path tmp = new Path("tmp_" + System.currentTimeMillis() + "-"
-        + new Random().nextInt());
+    Path tmp = new Path("tmp_" + System.currentTimeMillis() + "-"  + new Random().nextInt());
     FileOutputFormat.setOutputPath(job, tmp);
 
     int returnValue = 0;
